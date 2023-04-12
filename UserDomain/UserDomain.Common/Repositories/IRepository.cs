@@ -9,7 +9,6 @@ namespace UserDomain.Common.Repositories
     public interface IRepository<T>
     {
         public T GetById(Guid id);
-
         public T GetById(Guid id, DateTime atDate);
         public T GetById(Guid id, int version);
     }

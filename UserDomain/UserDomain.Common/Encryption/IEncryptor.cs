@@ -8,8 +8,9 @@ namespace UserDomain.Common.Encryption
 {
     public interface IEncryptor
     {
-        string DeEncrypt(Guid entityId, string value);
+        Guid GetKey(Guid entityId);
+        string Decrypt(Guid key, string value);
         bool DeleteKey(Guid entityId);
-        string Encrypt(Guid entityId, string value);
+        string Encrypt(Guid guid, string value);
     }
 }

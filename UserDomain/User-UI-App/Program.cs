@@ -23,24 +23,40 @@ messageBus.OnUserEvent += MessageBus_WriteUserEvent;
 
 // simulate some UI work - create and update some users using the service layer
 var userService = scope.ServiceProvider.GetService<UserDomain.Entities.UserService>();
-var user1 = userService.Create(new UserDomain.Common.UserData.UserData() { FirstName = "F1", LastName = "L1" });
-var user2 = userService.Create(new UserDomain.Common.UserData.UserData() { FirstName = "F11", LastName = "L11" });
-user1 = userService.Update(user1.Id, new UserDomain.Common.UserData.UserData() { FirstName = "F2", LastName = "L2" });
-user1 = userService.Update(user1.Id, new UserDomain.Common.UserData.UserData() { FirstName = "F3", LastName = "L3" });
-user1 = userService.Update(user1.Id, new UserDomain.Common.UserData.UserData() { FirstName = "CRAIG", LastName = "LAGER" });
-user2 = userService.Update(user2.Id, new UserDomain.Common.UserData.UserData() { FirstName = "F21", LastName = "L21" });
-
-// check the data (todo: move to unit test)
 var repo = scope.ServiceProvider.GetService<UserDomain.Common.Repositories.IRepository<UserDomain.Entities.User>>();
 
+Console.WriteLine("-------------------------------------");
+Console.WriteLine("UI INTERACTIONS");
+var user1 = userService.Create(new UserDomain.Common.UserData.UserData() { FirstName = "F1", LastName = "L1" });
 Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user1.Id)));
-Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user2.Id)));
-Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user1.Id, 2)));
-Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user2.Id, 1)));
 
+var user2 = userService.Create(new UserDomain.Common.UserData.UserData() { FirstName = "F11", LastName = "L11" });
+Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user2.Id)));
+
+user1 = userService.Update(user1.Id, new UserDomain.Common.UserData.UserData() { FirstName = "F2", LastName = "L2" });
+Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user1.Id)));
+
+user1 = userService.Update(user1.Id, new UserDomain.Common.UserData.UserData() { FirstName = "F3", LastName = "L3" });
+Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user1.Id)));
+
+user1 = userService.Update(user1.Id, new UserDomain.Common.UserData.UserData() { FirstName = "CRAIG", LastName = "LAGER" });
+Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user1.Id)));
+
+user2 = userService.Update(user2.Id, new UserDomain.Common.UserData.UserData() { FirstName = "F21", LastName = "L21" });
+Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user2.Id)));
+
+Console.WriteLine("-------------------------------------");
+Console.WriteLine("USER 1 HISTORY");
+Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user1.Id, 1)));
+Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user1.Id, 2)));
+Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user1.Id, 3)));
+Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user1.Id, 4)));
+Console.WriteLine("-------------------------------------");
+
+// check the data (todo: move to unit test)
 userService.Delete(user1.Id);
 Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user1.Id)));
-Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(repo.GetById(user1.Id, 2)));
+
 
 Console.ReadLine();
 

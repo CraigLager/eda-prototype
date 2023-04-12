@@ -8,31 +8,25 @@ namespace UserDomain.Entities
         public string LastName { get; internal set; }
         public Guid Id { get; private set; }
 
-        private IEncryptor _encryptor;
-
         public User(Guid id)
         {
             this.Id = id;
         }
 
-        private User(Guid id, Common.Encryption.IEncryptor encryptor)
+        public User(Guid id,  Common.Events.IUserEvent @event, Common.Encryption.IEncryptor encryptor) : this(id)
         {
-            this.Id = id;
-            this._encryptor = encryptor;
+            this.Process(@event, encryptor);
         }
 
-
-        public User(Guid id,  Common.Events.IUserEvent @event, Common.Encryption.IEncryptor encryptor) : this(id, encryptor)
+        public User(Guid id, IEnumerable<Common.Events.IUserEvent> @event, Common.Encryption.IEncryptor encryptor) : this(id)
         {
-            this.Process(@event);
+            foreach (var e in @event)
+            {
+                this.Process(e, encryptor);
+            }
         }
 
-        public User(Guid id, IEnumerable<Common.Events.IUserEvent> @event, Common.Encryption.IEncryptor encryptor) : this(id, encryptor)
-        {
-            this.Process(@event);
-        }
-
-        private bool Process(Common.Events.IUserEvent @event)
+        internal bool Process(Common.Events.IUserEvent @event, IEncryptor encryptor)
         {
             if(@event == null)
             {
@@ -41,19 +35,10 @@ namespace UserDomain.Entities
 
             if (@event.UserData != null)
             {
-                var data = @event.UserData.IsEncrypted ? @event.UserData.DeEncrypt(@event.Id, this._encryptor) : @event.UserData;
+                var key = encryptor.GetKey(this.Id);
+                var data = @event.UserData.ToDecrypted(key, encryptor);
                 this.FirstName = data.FirstName ?? this.FirstName;
                 this.LastName = data.LastName ?? this.LastName;
-            }
-
-            return true;
-        }
-
-        private bool Process(IEnumerable<Common.Events.IUserEvent> events)
-        {
-            foreach (var e in events)
-            {
-                Process(e);
             }
 
             return true;

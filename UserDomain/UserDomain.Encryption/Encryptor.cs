@@ -3,34 +3,57 @@ using System.Text;
 
 namespace UserDomain.Encryption
 {
+    /// <summary>
+    /// This class is trash. It "encrypts" by appending the key top the value and reversing the payload
+    /// The only thing that this is useful for is garbling keys in a viewable way
+    /// </summary>
     public class Encyptor : Common.Encryption.IEncryptor
     {
-        private static Dictionary<Guid, string> _keys = new Dictionary<Guid, string>();
+        private static Dictionary<Guid, Guid> _keys = new Dictionary<Guid, Guid>();
 
-        public string Encrypt(Guid entityId, string value)
+        public string Encrypt(Guid key, string value)
         {
-            if (!_keys.ContainsKey(entityId))
+            if (!_keys.ContainsValue(key))
             {
-                _keys.Add(entityId, Guid.NewGuid().ToString());
+                return value;
             }
-
-            var result = _keys[entityId] + value;
-            return result;
+            char[] charArray = value.ToCharArray();
+            Array.Reverse(charArray);
+            return key.ToString() + new string(charArray);
         }
 
-        public string DeEncrypt(Guid entityId, string value)
+        public string Decrypt(Guid key, string value)
         {
-            if (!_keys.ContainsKey(entityId))
+            if (!_keys.ContainsValue(key))
             {
                 return value;
             }
 
-            return value.Replace(_keys[entityId], "");
+            if(!value.Contains(key.ToString()))
+            {
+                return value;
+            }
+
+            value = value.Replace(key.ToString(), "");
+            char[] charArray = value.ToCharArray();
+            Array.Reverse(charArray);
+            return new string(charArray);
+
         }
 
         public bool DeleteKey(Guid entityId)
         {
             return _keys.Remove(entityId);
+        }
+
+        public Guid GetKey(Guid entityId)
+        {
+            if (!_keys.ContainsKey(entityId))
+            {
+                _keys.Add(entityId, Guid.NewGuid());
+            }
+
+            return _keys[entityId];
         }
     }
 }

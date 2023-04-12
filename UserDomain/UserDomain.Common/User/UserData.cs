@@ -13,22 +13,32 @@ namespace UserDomain.Common.UserData
 
         public bool IsEncrypted { get; set; }
 
-        public UserData ToEncrypted(Guid id, Encryption.IEncryptor encryptor)
+        public UserData ToEncrypted(Guid encryptionKey, Encryption.IEncryptor encryptor)
         {
+            if(this.IsEncrypted)
+            {
+                return this;
+            }
+
             return new UserData()
             {
-                FirstName = encryptor.Encrypt(id, this.FirstName),
-                LastName = encryptor.Encrypt(id, this.LastName),
+                FirstName = encryptor.Encrypt(encryptionKey, this.FirstName),
+                LastName = encryptor.Encrypt(encryptionKey, this.LastName),
                 IsEncrypted = true
             };
         }
 
-        public UserData DeEncrypt(Guid id, Encryption.IEncryptor encryptor)
+        public UserData ToDecrypted(Guid encryptionKey, Encryption.IEncryptor encryptor)
         {
+            if (!this.IsEncrypted)
+            {
+                return this;
+            }
+
             return new UserData()
             {
-                FirstName = encryptor.DeEncrypt(id, this.FirstName),
-                LastName = encryptor.DeEncrypt(id, this.LastName),
+                FirstName = encryptor.Decrypt(encryptionKey, this.FirstName),
+                LastName = encryptor.Decrypt(encryptionKey, this.LastName),
                 IsEncrypted = false
             };
 

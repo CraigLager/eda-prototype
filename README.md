@@ -9,3 +9,4 @@ This project ties together concepts fromt he Learning Domain-Driven Design book 
 2. Modelling of time via message bus
 3. Entities and the capability for projections
 4. Service layer for command operations
+5. Immutable events
