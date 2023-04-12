@@ -1,0 +1,1 @@
+﻿A bad encryption implementation, does not encrypt anything and just appends keys

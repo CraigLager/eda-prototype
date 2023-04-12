@@ -1,0 +1,1 @@
+﻿Common data structures and interfaces. No business logic.
